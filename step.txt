@@ -1,0 +1,47 @@
+Summary: Setting up KIND on AWS EC2
+Your goal is to run KIND (Kubernetes in Docker) on an Amazon Linux 2023 EC2 instance.
+1. Your current setup
+Component	Configuration
+Cloud provider	AWS EC2
+Operating system	Amazon Linux 2023
+Instance	t3.small (2 vCPU, 2 GiB RAM)
+Container runtime	Docker
+Kubernetes tool	KIND
+Node image	kindest/node:v1.32.1
+Config file	config.yml
+2. What we have done
+- Created the KIND configuration YAML.
+- Corrected the YAML structure and node roles.
+- Installed and started Docker.
+- Confirmed that sudo docker ps works.
+- Attempted to create the KIND cluster.
+3. Current issue
+Error: permission denied while trying to connect to the Docker daemon socket
+Docker is running, but your ec2-user cannot access Docker without sudo. KIND requires that access to create Kubernetes node containers.
+4. Next steps to fix it
+Run each command separately:
+Step 1 — Add the user to the Docker group
+sudo usermod -aG docker ec2-user
+
+
+Step 2 — Exit your SSH session
+exit
+
+
+Reconnect to EC2 using SSH.
+Step 3 — Verify group membership
+id
+
+
+Look for docker in the groups listed.
+Step 4 — Test Docker without sudo
+docker ps
+
+
+Step 5 — Create the cluster
+kind create cluster --name my-cluster --config config.yml
+
+
+Verify it:
+kubectl get nodes
+kubectl get pods -A
